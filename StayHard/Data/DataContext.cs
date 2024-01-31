@@ -45,5 +45,7 @@ public class DataContext : DbContext
             .HasOne(s => s.Student)
             .WithMany(examParticipant => examParticipant.ExamParitcipants)
             .HasForeignKey(s => s.StudentId);
+        
+        
     }
 }

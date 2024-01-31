@@ -34,21 +34,6 @@ public class ExamController: Controller
         return Ok(exams.Select(e => _mapper.Map<ExamDto>(e)));
     }
     
-    [HttpGet("course/{courseId}")]
-    [ProducesResponseType(type: typeof(IEnumerable<Exam>), statusCode: 200)]
-    public IActionResult GetExams(int courseId)
-    {
-        var exams = _examRepository.GetExams(courseId);
-
-        if (exams.Count == 0)
-            return NotFound("No Exams Found");
-
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        return Ok(exams.Select(e => _mapper.Map<ExamDto>(e)));
-    }
-    
     [HttpGet("{examId}")]
     [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
     public IActionResult GetExam(int examId)
@@ -64,7 +49,22 @@ public class ExamController: Controller
         return Ok(_mapper.Map<ExamDto>(exam));
     }
     
-    [HttpGet("question/{examId}")]
+    [HttpGet("course/{courseId}")]
+    [ProducesResponseType(type: typeof(IEnumerable<Exam>), statusCode: 200)]
+    public IActionResult GetExams(int courseId)
+    {
+        var exams = _examRepository.GetExams(courseId);
+
+        if (exams.Count == 0)
+            return NotFound("No Exams Found");
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        return Ok(exams.Select(e => _mapper.Map<ExamDto>(e)));
+    }
+    
+    [HttpGet("questions/{examId}")]
     [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
     public IActionResult GetQuestionsByExam(int examId)
     {
@@ -77,5 +77,20 @@ public class ExamController: Controller
             return BadRequest(ModelState);
 
         return Ok(questions.Select(q=> _mapper.Map<QuestionDto>(q)));
+    }
+    
+    [HttpGet("students/{examId}")]
+    [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
+    public IActionResult GetExamParticipants(int examId)
+    {
+        var students = _examRepository.GetExamParticipants(examId);
+
+        if (students.Count == 0)
+            return NotFound("No Students Found");
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        return Ok(students.Select(s=> _mapper.Map<StudentDto>(s)));
     }
 }

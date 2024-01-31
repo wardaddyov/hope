@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using StayHard.Data;
 using StayHard.Interfaces;
 using StayHard.Models;
@@ -27,6 +28,12 @@ public class StudentRepository: IStudentRepository
     {
         return _context.Students
             .Where(s => s.Firstname.ToLower() == firstName.ToLower() || s.Lastname.ToLower() == lastName.ToLower())
+            .ToList();
+    }
+
+    public ICollection<Score> GetStudentScoresByExam(int id, int examId)
+    {
+        return _context.Scores.Where(s => s.StudentId == id && s.Question.ExamId == examId).Include(s => s.Question)
             .ToList();
     }
 

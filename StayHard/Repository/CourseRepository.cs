@@ -23,7 +23,7 @@ public class CourseRepository: ICourseRepository
         return _context.Courses.Where(c => c.Name.ToLower() == name.ToLower()).OrderBy(c => c.Id).ToList();
     }
 
-    public ICollection<Course> GetCourse(int semester)
+    public ICollection<Course> GetCoursesBySemester(int semester)
     {
         return _context.Courses.Where(c => c.Semester == semester).OrderBy(c => c.Id).ToList();
     }
@@ -37,6 +37,11 @@ public class CourseRepository: ICourseRepository
     public ICollection<Student> GetStudentsByCourse(int courseId)
     {
         return _context.Enrolments.Where(c => c.CourseId == courseId).Select(s => s.Student).ToList();
+    }
+
+    public Course GetCourse(int courseId)
+    {
+        return _context.Courses.Where(c => c.Id == courseId).FirstOrDefault();
     }
 
     public bool CourseExists(int courseId)

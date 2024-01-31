@@ -34,6 +34,23 @@ public class CourseController: Controller
         return Ok(courses.Select(c => _mapper.Map<CourseDto>(c)));
     }
     
+    [HttpGet("course/{courseId}")]
+    public IActionResult GetCourse(int courseId)
+    {
+        if (!_courseRepository.CourseExists(courseId))
+            return NotFound("Course Not Found");
+        
+        var course = _courseRepository.GetCourse(courseId);
+
+        if (course == null)
+            return NotFound("No Students Found");
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        return Ok(_mapper.Map<CourseDto>(course));
+    }
+    
     [HttpGet("{courseName}")]
     [ProducesResponseType(type: typeof(IEnumerable<Course>), statusCode: 200)]
     public IActionResult GetCoursesByName(string courseName)
@@ -49,11 +66,11 @@ public class CourseController: Controller
         return Ok(courses.Select(c => _mapper.Map<CourseDto>(c)));
     }
     
-    [HttpGet("course/{semester}")]
+    [HttpGet("courses/{semester}")]
     [ProducesResponseType(type: typeof(IEnumerable<Course>), statusCode: 200)]
-    public IActionResult GetCoursesByName(int semester)
+    public IActionResult GetCoursesBySemester(int semester)
     {
-        var courses = _courseRepository.GetCourse(semester);
+        var courses = _courseRepository.GetCoursesBySemester(semester);
 
         if (courses.Count == 0)
             return NotFound("No Courses Found");

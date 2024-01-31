@@ -13,6 +13,9 @@ public class AutoMapperProfile: Profile
         CreateMap<Course, CourseDto>();
         CreateMap<Exam, ExamDto>();
         CreateMap<Question, QuestionDto>();
+        CreateMap<Score, ScoreDto>().IncludeMembers(s => s.Question);
+        CreateMap<Question, ScoreDto>();
+            /*.ForMember(x => x.Number, opt => opt.MapFrom(src => src.Question.Number));*/
         
         // DTO to Model
         CreateMap<StudentDto, Student>();
