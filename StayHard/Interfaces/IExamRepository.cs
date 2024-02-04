@@ -9,5 +9,7 @@ public interface IExamRepository
     Exam GetExam(int examId);
     ICollection<Question> GetExamQuestions(int examId);
     ICollection<Student> GetExamParticipants(int examId);
-    
+    bool CreateExam(Exam exam);
+    bool Save();
+
 }

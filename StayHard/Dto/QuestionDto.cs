@@ -4,4 +4,5 @@ public class QuestionDto
 {
     public int Number { get; set; }
     public float AvailableScore { get; set; }
+    public int ExamId { get; set; }
 }

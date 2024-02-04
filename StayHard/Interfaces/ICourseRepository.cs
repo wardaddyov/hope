@@ -14,6 +14,11 @@ public interface ICourseRepository
     // Because we can have multiple groups within the same semester
     ICollection<Course> GetCourse(string name, int semester);
     ICollection<Student> GetStudentsByCourse(int courseId);
+    ICollection<Enrolment> GetEnrolments();
     Course GetCourse(int courseId);
     bool CourseExists(int courseId);
+    bool CreateCourse(Course course);
+    bool AddStudentToCourse(Enrolment enrolment);
+    bool DeleteEnrolment(Enrolment enrolment);
+    bool Save();
 }

@@ -19,5 +19,9 @@ public class AutoMapperProfile: Profile
         
         // DTO to Model
         CreateMap<StudentDto, Student>();
+        CreateMap<CourseDto, Course>();
+        CreateMap<ExamDto, Exam>();
+        CreateMap<QuestionDto, Question>();
+        CreateMap<ScorePostDto, Score>();
     }
 }

@@ -39,6 +39,11 @@ public class CourseRepository: ICourseRepository
         return _context.Enrolments.Where(c => c.CourseId == courseId).Select(s => s.Student).ToList();
     }
 
+    public ICollection<Enrolment> GetEnrolments()
+    {
+        return _context.Enrolments.ToList();
+    }
+
     public Course GetCourse(int courseId)
     {
         return _context.Courses.Where(c => c.Id == courseId).FirstOrDefault();
@@ -47,5 +52,29 @@ public class CourseRepository: ICourseRepository
     public bool CourseExists(int courseId)
     {
         return _context.Courses.Any(c=> c.Id == courseId);
+    }
+
+    public bool CreateCourse(Course course)
+    {
+        _context.Add(course);
+        return Save();
+    }
+
+    public bool AddStudentToCourse(Enrolment enrolment)
+    {
+        _context.Add(enrolment);
+        return Save();
+    }
+
+    public bool DeleteEnrolment(Enrolment enrolment)
+    {
+        _context.Remove(enrolment);
+        return Save();
+    }
+
+    public bool Save()
+    {
+        var saved = _context.SaveChanges();
+        return saved > 0 ? true : false;
     }
 }

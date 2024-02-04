@@ -39,4 +39,16 @@ public class ExamRepository: IExamRepository
             .Select(s => s.Student)
             .OrderBy(s => s.StudentID).ToList();
     }
+
+    public bool CreateExam(Exam exam)
+    {
+        _context.Add(exam);
+        return Save();
+    }
+
+    public bool Save()
+    {
+        var saved = _context.SaveChanges();
+        return saved > 0 ? true : false;
+    }
 }

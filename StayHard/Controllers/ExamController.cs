@@ -93,4 +93,36 @@ public class ExamController: Controller
 
         return Ok(students.Select(s=> _mapper.Map<StudentDto>(s)));
     }
+    
+    [HttpPost]
+    public IActionResult CreateExam([FromBody] ExamDto examDto)
+    {
+        if (examDto == null)
+            return BadRequest();
+
+        var exam = _examRepository.GetExams()
+            .Where(e => e.Date == examDto.Date)
+            .Where(e => e.Name == examDto.Name)
+            .Where(e => e.CourseId == examDto.CourseId)
+            .FirstOrDefault();
+
+        if (exam != null)
+        {
+            ModelState.AddModelError("", "Exam Already Exists");
+            return StatusCode(422, ModelState);
+        }
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var examObj = _mapper.Map<Exam>(examDto);
+
+        if (!_examRepository.CreateExam(examObj))
+        {
+            ModelState.AddModelError("", "Something went wrong while saving!");
+            return StatusCode(500, ModelState);
+        }
+
+        return Ok("Successfully created");
+    }
 }
