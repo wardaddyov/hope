@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StayHard.Data;
 using StayHard.Interfaces;
 using StayHard.Repository;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,22 +18,31 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IExamRepository, ExamRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
+builder.Services.AddScoped<IOptionsRepository, OptionsRepository>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
     );
 
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 
+string metext = Environment.GetEnvironmentVariable("CV");
+Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+Trace.AutoFlush = true;
+Trace.Indent();
+Trace.WriteLine(metext);
+Trace.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();
