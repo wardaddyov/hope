@@ -23,6 +23,11 @@ public class StudentRepository: IStudentRepository
     {
         return _context.Students.Where(s => s.StudentID == studentId).FirstOrDefault();
     }
+    
+    public Student GetStudent(int studentId)
+    {
+        return _context.Students.Where(s => s.Id == studentId).FirstOrDefault();
+    }
 
     public ICollection<Student> GetStudent(string firstName, string lastName)
     {

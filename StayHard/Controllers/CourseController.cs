@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using StayHard.Dto;
 using StayHard.Interfaces;
 using StayHard.Models;
@@ -43,9 +44,6 @@ public class CourseController: Controller
             return NotFound("Course Not Found");
         
         var course = _courseRepository.GetCourse(courseId);
-
-        if (course == null)
-            return NotFound("No Students Found");
         
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -121,112 +119,76 @@ public class CourseController: Controller
         if (courseDto == null)
             return BadRequest();
 
-        var course = _courseRepository.GetCourses()
-            .Where(c => c.Name == courseDto.Name)
-            .Where(c => c.Semester == courseDto.Semester)
-            .Where(c => c.Group == courseDto.Group)
-            .FirstOrDefault();
+        var course = _courseRepository.GetCourse(courseDto.Name, courseDto.Semester, courseDto.Group);
 
         if (course != null)
         {
-            ModelState.AddModelError("", "Course Already Exists");
-            return StatusCode(422, ModelState);
+            return UnprocessableEntity("Course Already Exists");
         }
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var courseObj = _mapper.Map<Course>(courseDto);
-
-
-        if (!_courseRepository.CreateCourse(courseObj))
-        {
-            ModelState.AddModelError("", "Something went wrong while saving!");
-            return StatusCode(500, ModelState);
-        }
-
-        return Ok("Successfully created");
+        
+        return _courseRepository.CreateCourse(courseObj)
+            ? Ok("Successfully created")
+            : Problem(statusCode: 500, detail: "Something went wrong while saving!");
     }
     
     [HttpPost("Enrolments/{studentId}/{courseId}")]
     public IActionResult CreateStudent([FromRoute] int studentId, int courseId)
     {
-        var student = _studentRepository.GetStudents()
-            .Where(s => s.Id == studentId)
-            .FirstOrDefault();
+        var student = _studentRepository.GetStudent(studentId);
 
-        var course = _courseRepository.GetCourses()
-            .Where(c => c.Id == courseId)
-            .FirstOrDefault();
-        
-
+        var course = _courseRepository.GetCourse(courseId);
         
         if (student == null)
         {
-            ModelState.AddModelError("", "Student Not Found");
-            return StatusCode(404, ModelState);
+            return NotFound("Student Not Found");
         }   
         if (course == null)
         {
-            ModelState.AddModelError("", "Course Not Found");
-            return StatusCode(404, ModelState);
+             return NotFound("Course Not Found");
         }
-        
-        var enrolment = _courseRepository.GetStudentsByCourse(courseId)
-            .Where(s => s.Id == studentId)
-            .FirstOrDefault();
+
+        var enrolment = _courseRepository.GetStudentByCourse(courseId, studentId);
         
         if (enrolment != null)
         {
-            ModelState.AddModelError("", "Student already applied for the course");
-            return StatusCode(404, ModelState);
+            return UnprocessableEntity("Student already applied for the course");
         }
-        
-        Enrolment enrolmentObj = new Enrolment();
-        enrolmentObj.StudentId = studentId;
-        enrolmentObj.CourseId = courseId;
-        enrolmentObj.Course = course;
-        enrolmentObj.Student = student;
+
+        var enrolmentObj = _courseRepository.CreateEnrolment(course, student);
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        
-        if (!_courseRepository.AddStudentToCourse(enrolmentObj))
-        {
-            ModelState.AddModelError("", "Something went wrong while saving!");
-            return StatusCode(500, ModelState);
-        }
 
+        bool status = _courseRepository.AddStudentToCourse(enrolmentObj);
+        if(!status)
+            return Problem(statusCode: 500, detail: "Something went wrong while saving!");
         return Ok("Successfully created");
     }
 
     [HttpDelete("Enrolments/{studentId}/{courseId}")]
     public IActionResult DeleteEnrolment([FromRoute] int studentId, int courseId)
     {
-        var student = _courseRepository.GetStudentsByCourse(courseId)
-            .Where(s => s.Id == studentId)
-            .FirstOrDefault();
+        var student = _studentRepository.GetStudent(studentId);
         
         if (student == null)
         {
-            ModelState.AddModelError("", "Student Not Found");
-            return StatusCode(404, ModelState);
+            return NotFound("Student Not Found");
         }
         
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var enrolment = _courseRepository.GetEnrolments()
-            .Where(e => e.CourseId == courseId)
-            .Where(e => studentId == studentId)
-            .FirstOrDefault();
+        var enrolment = _courseRepository.GetStudentByCourse(courseId, studentId);
         
         if (!_courseRepository.DeleteEnrolment(enrolment))
         {
-            ModelState.AddModelError("", "Something went wrong while saving!");
-            return StatusCode(500, ModelState);
+           return Problem(statusCode: 500, detail: "Something went wrong while deleting!");
         }
-
         return NoContent();
     }
 }

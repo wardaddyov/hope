@@ -33,10 +33,22 @@ public class CourseRepository: ICourseRepository
         return _context.Courses.Where(c => c.Name.ToLower() == name.ToLower() && c.Semester == semester)
             .OrderBy(c => c.Id).ToList();
     }
+    
+    public Course GetCourse(string name, int semester, int group)
+    {
+        return _context.Courses
+            .Where(c => c.Name.ToLower() == name.ToLower() && c.Semester == semester && c.Group == group)
+            .FirstOrDefault();
+    }
 
     public ICollection<Student> GetStudentsByCourse(int courseId)
     {
         return _context.Enrolments.Where(c => c.CourseId == courseId).Select(s => s.Student).ToList();
+    }
+
+    public Enrolment GetStudentByCourse(int courseId, int studentId)
+    {
+        return _context.Enrolments.Where(c => c.CourseId == courseId && c.StudentId == studentId).FirstOrDefault();
     }
 
     public ICollection<Enrolment> GetEnrolments()
@@ -58,6 +70,17 @@ public class CourseRepository: ICourseRepository
     {
         _context.Add(course);
         return Save();
+    }
+
+    public Enrolment CreateEnrolment(Course course, Student student)
+    {
+        return new Enrolment()
+        {
+            StudentId = student.Id,
+            CourseId = course.Id,
+            Course = course,
+            Student = student
+        }; 
     }
 
     public bool AddStudentToCourse(Enrolment enrolment)
