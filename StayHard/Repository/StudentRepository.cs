@@ -47,9 +47,26 @@ public class StudentRepository: IStudentRepository
         return _context.Students.Any(s => s.StudentID == studentId);
     }
 
+    public bool StudentExists(int id)
+    {
+        return _context.Students.Any(s => s.Id == id);
+    }
+
     public bool CreateStudent(Student student)
     {
         _context.Add(student);
+        return Save();
+    }
+    
+    public bool UpdateStudent(Student student)
+    {
+        _context.Update(student);
+        return Save();
+    }
+    
+    public bool DeleteStudent(Student student)
+    {
+        _context.Remove(student);
         return Save();
     }
 

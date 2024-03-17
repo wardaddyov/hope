@@ -15,6 +15,8 @@ public class DataContext : DbContext
     public DbSet<Exam> Exams { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<Score> Scores { get; set; }
+
+    public DbSet<Admin> Admins { get; set; }
     
     // Joined Tables
     public DbSet<Enrolment> Enrolments { get; set; }
@@ -45,7 +47,11 @@ public class DataContext : DbContext
             .HasOne(s => s.Student)
             .WithMany(examParticipant => examParticipant.ExamParitcipants)
             .HasForeignKey(s => s.StudentId);
-        
-        
+
+        // Make the studentId a unique field
+        modelBuilder.Entity<Student>()
+            .HasIndex(s => s.StudentID).IsUnique();
+
+
     }
 }

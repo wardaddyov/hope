@@ -72,6 +72,12 @@ public class CourseRepository: ICourseRepository
         return Save();
     }
 
+    public bool UpdateCourse(Course course)
+    {
+        _context.Update(course);
+        return Save();
+    }
+
     public Enrolment CreateEnrolment(Course course, Student student)
     {
         return new Enrolment()

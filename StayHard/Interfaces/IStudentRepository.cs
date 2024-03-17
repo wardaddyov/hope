@@ -11,6 +11,9 @@ public interface IStudentRepository
     ICollection<Student> GetStudent(string firstName, string lastName);
     ICollection<Score> GetStudentScoresByExam(int id, int examId);
     bool StudentExists(string studentId);
+    bool StudentExists(int id);
     bool CreateStudent(Student student);
+    bool UpdateStudent(Student student);
+    bool DeleteStudent(Student student);
     bool Save();
 }

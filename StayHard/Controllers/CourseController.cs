@@ -191,4 +191,33 @@ public class CourseController: Controller
         }
         return NoContent();
     }
+    
+    [HttpPut("{courseId}")]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public IActionResult UpdateCourse(int courseId, [FromBody]CourseDto courseDto)
+    {
+        if (courseDto == null)
+            return BadRequest(ModelState);
+
+        //if (courseId != courseDto.)
+          //  return BadRequest(ModelState);
+
+        if (!_courseRepository.CourseExists(courseId))
+            return NotFound();
+
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var courseObj = _mapper.Map<Course>(courseDto);
+
+        if(!_courseRepository.UpdateCourse(courseObj))
+        {
+            ModelState.AddModelError("", "Something went wrong updating course");
+            return StatusCode(500, ModelState);
+        }
+
+        return NoContent();
+    }
 }

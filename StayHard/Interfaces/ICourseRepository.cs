@@ -20,8 +20,10 @@ public interface ICourseRepository
     Course GetCourse(int courseId);
     bool CourseExists(int courseId);
     bool CreateCourse(Course course);
+    bool UpdateCourse(Course course);
     Enrolment CreateEnrolment(Course course, Student student);
     bool AddStudentToCourse(Enrolment enrolment);
     bool DeleteEnrolment(Enrolment enrolment);
+
     bool Save();
 }

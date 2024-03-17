@@ -101,4 +101,59 @@ public class StudentController : Controller
 
         return Ok("Successfully created");
     }
+    
+    [HttpPut("{studentId}")]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public IActionResult UpdateStudent(int studentId, [FromBody]StudentDto updatedStudent)
+    {
+        if (updatedStudent == null)
+            return BadRequest(ModelState);
+
+        if (studentId != updatedStudent.Id)
+            return BadRequest(ModelState);
+
+        if (!_studentRepository.StudentExists(studentId))
+            return NotFound();
+
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var studentObj = _mapper.Map<Student>(updatedStudent);
+        studentObj.Username = studentObj.StudentID;
+        studentObj.Password = "1234";
+
+        if(!_studentRepository.UpdateStudent(studentObj))
+        {
+            ModelState.AddModelError("", "Something went wrong updating category");
+            return StatusCode(500, ModelState);
+        }
+
+        return NoContent();
+    }
+    
+    [HttpDelete("{studentId}")]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public IActionResult DeleteStudent(int studentId)
+    {
+        if(!_studentRepository.StudentExists(studentId))
+        {
+            return NotFound();
+        }
+
+        var student = _studentRepository.GetStudent(studentId);
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        if(!_studentRepository.DeleteStudent(student))
+        {
+            ModelState.AddModelError("", "Something went wrong deleting student");
+        }
+
+        return NoContent();
+    }
 }
