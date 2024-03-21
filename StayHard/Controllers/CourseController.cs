@@ -137,7 +137,7 @@ public class CourseController: Controller
     }
     
     [HttpPost("Enrolments/{studentId}/{courseId}")]
-    public IActionResult CreateStudent([FromRoute] int studentId, int courseId)
+    public IActionResult CreateEnrolment([FromRoute] int studentId, int courseId)
     {
         var student = _studentRepository.GetStudent(studentId);
 
@@ -159,12 +159,54 @@ public class CourseController: Controller
             return UnprocessableEntity("Student already applied for the course");
         }
 
-        var enrolmentObj = _courseRepository.CreateEnrolment(course, student);
+        var enrolmentObj = _courseRepository.CreateEnrolmentObject(course, student);
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         bool status = _courseRepository.AddStudentToCourse(enrolmentObj);
+        if(!status)
+            return Problem(statusCode: 500, detail: "Something went wrong while saving!");
+        return Ok("Successfully created");
+    }
+    
+    [HttpPost("Enrolments/{courseId}")]
+    public IActionResult CreateEnrolments([FromRoute] int courseId, [FromBody] List<int> studentIds)
+    {        
+        var course = _courseRepository.GetCourse(courseId);
+        List<Enrolment> enrolmentObjs = [];
+ 
+        if (course == null)
+        {
+            return NotFound("Course Not Found");
+        }
+        
+        foreach (var id in studentIds)
+        {
+            var student = _studentRepository.GetStudent(id);
+            
+            if (student == null)
+            {
+                return NotFound("Student Not Found");
+            }  
+            
+            var enrolment = _courseRepository.GetStudentByCourse(courseId, id);
+        
+            if (enrolment != null)
+            {
+                return UnprocessableEntity($"Student {enrolment.StudentId} already applied for the course");
+            }
+            
+            var enrolmentObj = _courseRepository.CreateEnrolmentObject(course, student);
+            enrolmentObjs.Add(enrolmentObj);
+        }
+
+        
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        bool status = _courseRepository.AddStudentsToCourse(enrolmentObjs);
         if(!status)
             return Problem(statusCode: 500, detail: "Something went wrong while saving!");
         return Ok("Successfully created");

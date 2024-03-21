@@ -78,7 +78,7 @@ public class CourseRepository: ICourseRepository
         return Save();
     }
 
-    public Enrolment CreateEnrolment(Course course, Student student)
+    public Enrolment CreateEnrolmentObject(Course course, Student student)
     {
         return new Enrolment()
         {
@@ -87,6 +87,25 @@ public class CourseRepository: ICourseRepository
             Course = course,
             Student = student
         }; 
+    }
+
+    public bool AddStudentsToCourse(List<Enrolment> enrolments)
+    {
+        try
+        {
+            foreach (var enrolment in enrolments)
+            {
+                _context.Add(enrolment);
+            }
+            return Save();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+        
+        
     }
 
     public bool AddStudentToCourse(Enrolment enrolment)

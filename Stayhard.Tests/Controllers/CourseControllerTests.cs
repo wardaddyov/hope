@@ -279,7 +279,7 @@ public class CourseControllerTests
     
     [Fact]
     // No students found
-    public void CourseController_CreateStudent_ReturnStudentNotFound()
+    public void CourseController_CreateEnrolment_ReturnStudentNotFound()
     {
         //Arrange
         const int studentId = 0;
@@ -287,7 +287,7 @@ public class CourseControllerTests
         A.CallTo(() => _studentRepository.GetStudent(studentId)).Returns(null);
         
         //Act
-        var result = _controller.CreateStudent(studentId, courseId);
+        var result = _controller.CreateEnrolment(studentId, courseId);
         
         //Assert
         result.Should().BeOfType(typeof(NotFoundObjectResult));
@@ -295,7 +295,7 @@ public class CourseControllerTests
     
     [Fact]
     // No course found
-    public void CourseController_CreateStudent_ReturnCourseNotFound()
+    public void CourseController_CreateEnrolment_ReturnCourseNotFound()
     {
         //Arrange
         const int studentId = 0;
@@ -303,7 +303,7 @@ public class CourseControllerTests
         A.CallTo(() => _courseRepository.GetCourse(courseId)).Returns(null);
         
         //Act
-        var result = _controller.CreateStudent(studentId, courseId);
+        var result = _controller.CreateEnrolment(studentId, courseId);
         
         //Assert
         result.Should().BeOfType(typeof(NotFoundObjectResult));
@@ -311,7 +311,7 @@ public class CourseControllerTests
     
     [Fact]
     // Student Already Enrolled
-    public void CourseController_CreateStudent_ReturnUnprocessableEntity()
+    public void CourseController_CreateEnrolment_ReturnUnprocessableEntity()
     {
         //Arrange
         const int studentId = 0;
@@ -320,7 +320,7 @@ public class CourseControllerTests
         A.CallTo(() => _courseRepository.GetStudentByCourse(courseId, studentId)).Returns(enrolment);
         
         //Act
-        var result = _controller.CreateStudent(studentId, courseId);
+        var result = _controller.CreateEnrolment(studentId, courseId);
         
         //Assert
         result.Should().BeOfType(typeof(UnprocessableEntityObjectResult));
@@ -328,7 +328,7 @@ public class CourseControllerTests
 
     [Fact]
     // Couldn't be created
-    public void CourseController_CreateStudent_ReturnObjectResult()
+    public void CourseController_CreateEnrolment_ReturnObjectResult()
     {
         //Arrange
         var student = A.Fake<Student>();
@@ -338,11 +338,11 @@ public class CourseControllerTests
         
         
         A.CallTo(() => _courseRepository.GetStudentByCourse(course.Id, student.Id)).Returns(null);
-        A.CallTo(() => _courseRepository.CreateEnrolment(course, student)).Returns(enrolmentObj);
+        A.CallTo(() => _courseRepository.CreateEnrolmentObject(course, student)).Returns(enrolmentObj);
         //A.CallTo(() => _courseRepository.AddStudentToCourse(enrolmentObj)).Returns(false);
         
         //Act
-        var result = _controller.CreateStudent(student.Id, course.Id);
+        var result = _controller.CreateEnrolment(student.Id, course.Id);
         
         //Assert
         result.Should().BeOfType(typeof(ObjectResult));
@@ -353,7 +353,7 @@ public class CourseControllerTests
     /* The method is actually functional and works as expected in production But the unit test is not working, I don't know why */
     /******  Wooooooooorked finally ******/
     [Fact]
-    public void CourseController_CreateStudent_ReturnOk()
+    public void CourseController_CreateEnrolment_ReturnOk()
     {
         //Arrange
         var student = A.Fake<Student>();
@@ -369,11 +369,11 @@ public class CourseControllerTests
         A.CallTo(() => _studentRepository.GetStudent(student.Id)).Returns(student);
         A.CallTo(() => _courseRepository.GetCourse(course.Id)).Returns(course);
         A.CallTo(() => _courseRepository.GetStudentByCourse(course.Id, student.Id)).Returns(null);
-        A.CallTo(() => _courseRepository.CreateEnrolment(course, student)).Returns(enrolmentObj);
+        A.CallTo(() => _courseRepository.CreateEnrolmentObject(course, student)).Returns(enrolmentObj);
         A.CallTo(() => _courseRepository.AddStudentToCourse(enrolmentObj)).Returns(true);
         
         //Act
-        var result = _controller.CreateStudent(student.Id, course.Id);
+        var result = _controller.CreateEnrolment(student.Id, course.Id);
         
         //Assert
         result.Should().BeOfType(typeof(OkObjectResult));

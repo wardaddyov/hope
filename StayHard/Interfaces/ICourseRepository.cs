@@ -21,7 +21,8 @@ public interface ICourseRepository
     bool CourseExists(int courseId);
     bool CreateCourse(Course course);
     bool UpdateCourse(Course course);
-    Enrolment CreateEnrolment(Course course, Student student);
+    Enrolment CreateEnrolmentObject(Course course, Student student);
+    bool AddStudentsToCourse(List<Enrolment> enrolments);
     bool AddStudentToCourse(Enrolment enrolment);
     bool DeleteEnrolment(Enrolment enrolment);
 
