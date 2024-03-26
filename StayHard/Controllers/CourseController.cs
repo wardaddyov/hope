@@ -132,7 +132,7 @@ public class CourseController: Controller
         var courseObj = _mapper.Map<Course>(courseDto);
         
         return _courseRepository.CreateCourse(courseObj)
-            ? Ok("Successfully created")
+            ? Ok(courseObj.Id)
             : Problem(statusCode: 500, detail: "Something went wrong while saving!");
     }
     

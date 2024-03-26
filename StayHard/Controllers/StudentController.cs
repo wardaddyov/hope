@@ -90,6 +90,7 @@ public class StudentController : Controller
             return BadRequest(ModelState);
 
         var studentObj = _mapper.Map<Student>(studentDto);
+        
         studentObj.Username = studentObj.StudentID;
         studentObj.Password = "1234";
 
