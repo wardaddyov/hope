@@ -1,3 +1,4 @@
+using System.Drawing.Printing;
 using Microsoft.EntityFrameworkCore;
 using StayHard.Data;
 using StayHard.Interfaces;
@@ -51,9 +52,9 @@ public class CourseRepository: ICourseRepository
         return _context.Enrolments.Where(c => c.CourseId == courseId && c.StudentId == studentId).FirstOrDefault();
     }
 
-    public ICollection<Enrolment> GetEnrolments()
+    public ICollection<Enrolment> GetEnrolments(int courseId)
     {
-        return _context.Enrolments.ToList();
+        return _context.Enrolments.Where(e => e.CourseId == courseId).ToList();
     }
 
     public Course GetCourse(int courseId)
@@ -76,6 +77,16 @@ public class CourseRepository: ICourseRepository
     {
         _context.Update(course);
         return Save();
+    }  
+    public bool UpdateEnrolments(List<Enrolment> enrolments)
+    {
+
+            foreach (var enrolment in enrolments)
+            {
+                Console.WriteLine(enrolment.StudentId);
+                _context.Update(enrolment);
+            }
+            return Save();
     }
 
     public Enrolment CreateEnrolmentObject(Course course, Student student)
@@ -117,6 +128,29 @@ public class CourseRepository: ICourseRepository
     public bool DeleteEnrolment(Enrolment enrolment)
     {
         _context.Remove(enrolment);
+        return Save();
+    }
+
+    public bool DeleteEnrolments(List<Enrolment> enrolments)
+    {
+        try
+        {
+            foreach (var enrolment in enrolments)
+            {
+                _context.Remove(enrolment);
+            }
+            return Save();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
+
+    public bool DeleteCourse(Course course)
+    {
+        _context.Remove(course);
         return Save();
     }
 

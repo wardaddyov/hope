@@ -16,15 +16,18 @@ public interface ICourseRepository
     Course GetCourse(string name, int semester, int group);
     ICollection<Student> GetStudentsByCourse(int courseId);
     Enrolment GetStudentByCourse(int courseId, int studentId);
-    ICollection<Enrolment> GetEnrolments();
+    ICollection<Enrolment> GetEnrolments(int courseId);
     Course GetCourse(int courseId);
     bool CourseExists(int courseId);
     bool CreateCourse(Course course);
     bool UpdateCourse(Course course);
+    bool UpdateEnrolments(List<Enrolment> enrolments);
     Enrolment CreateEnrolmentObject(Course course, Student student);
     bool AddStudentsToCourse(List<Enrolment> enrolments);
     bool AddStudentToCourse(Enrolment enrolment);
     bool DeleteEnrolment(Enrolment enrolment);
+    bool DeleteEnrolments(List<Enrolment> enrolments);
+    bool DeleteCourse(Course course);
 
     bool Save();
 }

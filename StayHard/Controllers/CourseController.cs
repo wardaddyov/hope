@@ -234,17 +234,37 @@ public class CourseController: Controller
         return NoContent();
     }
     
+    [HttpDelete("deleteCourse/{courseId}")]
+    public IActionResult DeleteCourse([FromRoute] int courseId)
+    {
+        var course = _courseRepository.GetCourse(courseId);
+        
+        if (course == null)
+        {
+            return NotFound("Course Not Found");
+        }
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
+        if (!_courseRepository.DeleteCourse(course))
+        {
+           return Problem(statusCode: 500, detail: "Something went wrong while deleting!");
+        }
+        return NoContent();
+    }
+    
     [HttpPut("{courseId}")]
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public IActionResult UpdateCourse(int courseId, [FromBody]CourseDto courseDto)
+    public IActionResult UpdateCourse(int courseId, [FromBody]CourseDto course)
     {
-        if (courseDto == null)
+        if (course == null)
             return BadRequest(ModelState);
 
-        //if (courseId != courseDto.)
-          //  return BadRequest(ModelState);
+        if (courseId != course.Id)
+            return BadRequest(ModelState);
 
         if (!_courseRepository.CourseExists(courseId))
             return NotFound();
@@ -252,7 +272,7 @@ public class CourseController: Controller
         if (!ModelState.IsValid)
             return BadRequest();
 
-        var courseObj = _mapper.Map<Course>(courseDto);
+        var courseObj = _mapper.Map<Course>(course);
 
         if(!_courseRepository.UpdateCourse(courseObj))
         {
@@ -260,6 +280,60 @@ public class CourseController: Controller
             return StatusCode(500, ModelState);
         }
 
-        return NoContent();
+        return Ok();
     }
+    
+    [HttpPut("Enrolments/{courseId}")]
+    public IActionResult UpdateEnrolments([FromRoute] int courseId, [FromBody] List<int> studentIds)
+    {        
+        var course = _courseRepository.GetCourse(courseId);
+        List<Enrolment> enrolmentObjs = [];
+ 
+        if (course == null)
+        {
+            return NotFound("Course Not Found");
+        }
+        
+        // Create new enrolments
+        foreach (var id in studentIds)
+        {
+            var student = _studentRepository.GetStudent(id);
+            
+            if (student == null)
+            {
+                return NotFound("Student Not Found");
+            }  
+            
+            var enrolment = _courseRepository.GetStudentByCourse(courseId, id);
+        
+            if (enrolment != null)
+            {
+                enrolmentObjs.Add(enrolment);
+                continue;
+            }
+            
+            var enrolmentObj = _courseRepository.CreateEnrolmentObject(course, student);
+            enrolmentObjs.Add(enrolmentObj);
+        }
+        
+        // Remove old enrolments
+        var oldEnrolments = _courseRepository.GetEnrolments(courseId);
+        Console.WriteLine(oldEnrolments.Count);
+        if (oldEnrolments.Count != 0)
+        {
+            bool deleteStatus = _courseRepository.DeleteEnrolments(oldEnrolments.ToList());
+        
+            if (deleteStatus == false)
+                return Problem(statusCode: 500, detail: "Something went wrong while deleting old enrolments!");
+        }
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        bool status = _courseRepository.AddStudentsToCourse(enrolmentObjs);
+        if(!status)
+            return Problem(statusCode: 500, detail: "Something went wrong while saving!");
+        return Ok("Successfully updated");
+    }
+
 }
