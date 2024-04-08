@@ -40,9 +40,52 @@ public class ExamRepository: IExamRepository
             .OrderBy(s => s.StudentID).ToList();
     }
 
+    public bool ExamExists(int examId)
+    {
+        return _context.Exams.Any(e=> e.Id == examId);
+    }
+
     public bool CreateExam(Exam exam)
     {
         _context.Add(exam);
+        return Save();
+    }
+
+    public bool EditExam(Exam exam)
+    {
+        _context.Update(exam);
+        return Save();
+    }
+
+    public bool RemoveExam(Exam exam)
+    {
+        _context.Remove(exam);
+        return Save();
+    }
+
+    public ICollection<ExamFile?> GetExamFiles(int questionFileId, int answerFileId)
+    {
+        var questionFile = _context.ExamFiles.Where(ef => ef.Id == questionFileId).FirstOrDefault();
+        var answerFile = _context.ExamFiles.Where(ef => ef.Id == answerFileId).FirstOrDefault();
+
+        return new List<ExamFile?> {questionFile, answerFile };
+    }
+
+    public bool CreateFile(ExamFile examFile)
+    {
+        _context.Add(examFile);
+        return Save();
+    }
+
+    public bool RemoveFile(ExamFile examFile)
+    {
+        _context.Remove(examFile);
+        return Save();
+    }
+
+    public bool EditFile(ExamFile examFile)
+    {
+        _context.Update(examFile);
         return Save();
     }
 

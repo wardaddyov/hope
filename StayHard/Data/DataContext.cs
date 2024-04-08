@@ -17,6 +17,7 @@ public class DataContext : DbContext
     public DbSet<Score> Scores { get; set; }
 
     public DbSet<Admin> Admins { get; set; }
+    public DbSet<ExamFile> ExamFiles { get; set; }
     
     // Joined Tables
     public DbSet<Enrolment> Enrolments { get; set; }
@@ -47,11 +48,25 @@ public class DataContext : DbContext
             .HasOne(s => s.Student)
             .WithMany(examParticipant => examParticipant.ExamParitcipants)
             .HasForeignKey(s => s.StudentId);
+        
+        // Exam File setup
+        modelBuilder.Entity<Exam>()
+            .HasOne(e => e.AnswerFile)
+            .WithOne(e => e.Exam)
+            .HasForeignKey<Exam>(e => e.AnswerFileId); 
+        
+        modelBuilder.Entity<Exam>()
+            .HasOne(e => e.QuestionFile)
+            .WithOne(e => e.Exam2)
+            .HasForeignKey<Exam>(e => e.QuestionFileId);
 
         // Make the studentId a unique field
         modelBuilder.Entity<Student>()
             .HasIndex(s => s.StudentID).IsUnique();
-
-
+        
+        // convert exam enum to int
+        modelBuilder.Entity<Exam>()
+            .Property(e => e.Type)
+            .HasConversion<int>();
     }
 }

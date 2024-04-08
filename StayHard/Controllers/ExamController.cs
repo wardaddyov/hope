@@ -125,4 +125,54 @@ public class ExamController: Controller
 
         return Ok("Successfully created");
     }
+    
+    [HttpDelete("deleteExam/{examId}")]
+    public IActionResult DeleteExam([FromRoute] int examId)
+    {
+        var exam = _examRepository.GetExam(examId);
+        
+        if (exam == null)
+        {
+            return NotFound("Exam Not Found");
+        }
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
+        if (!_examRepository.RemoveExam(exam))
+        {
+            return Problem(statusCode: 500, detail: "Something went wrong while deleting!");
+        }
+        return NoContent();
+    }
+    
+    [HttpPut("{examId}")]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public IActionResult UpdateExam(int examId, [FromBody]ExamDto examDto)
+    {
+        if (examDto == null)
+            return BadRequest(ModelState);
+
+        if (examId != examDto.Id)
+            return BadRequest(ModelState);
+
+        if (!_examRepository.ExamExists(examId))
+            return NotFound();
+
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var examObj = _mapper.Map<Exam>(examDto);
+
+        if(!_examRepository.EditExam(examObj))
+        {
+            ModelState.AddModelError("", "Something went wrong updating course");
+            return StatusCode(500, ModelState);
+        }
+
+        return Ok();
+    }
+    
 }
