@@ -32,8 +32,6 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IExamRepository, ExamRepository>();
-builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
-builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
 builder.Services.AddScoped<IOptionsRepository, OptionsRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();

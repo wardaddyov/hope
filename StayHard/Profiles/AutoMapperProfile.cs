@@ -12,17 +12,15 @@ public class AutoMapperProfile: Profile
         CreateMap<Student, StudentDto>();
         CreateMap<Course, CourseDto>();
         CreateMap<Exam, ExamDto>();
-        CreateMap<Question, QuestionDto>();
-        CreateMap<Score, ScoreDto>().IncludeMembers(s => s.Question);
-        CreateMap<Question, ScoreDto>();
+        //CreateMap<Score, ScoreDto>().IncludeMembers(s => s.Question);
         CreateMap<Admin, AdminGetDto>();
+        CreateMap<ExamQuestionFile, ExamFileDto>();
             /*.ForMember(x => x.Number, opt => opt.MapFrom(src => src.Question.Number));*/
         
         // DTO to Model
         CreateMap<StudentDto, Student>();
         CreateMap<CourseDto, Course>();
         CreateMap<ExamDto, Exam>();
-        CreateMap<QuestionDto, Question>();
-        CreateMap<ScorePostDto, Score>();
+        CreateMap<ExamFileDto, ExamQuestionFile>();
     }
 }

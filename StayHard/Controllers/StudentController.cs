@@ -56,19 +56,6 @@ public class StudentController : Controller
             return BadRequest(ModelState);
         return Ok(students.Select(s => _mapper.Map<StudentDto>(s)));
     }
-    
-    [HttpGet("scores/{examId}/{id}")]
-    [ProducesResponseType(type: typeof(Score), statusCode: 200)]
-    [ProducesResponseType(statusCode: 400)]
-    public IActionResult GetStudentScoresByExam(int id, int examId)
-    {
-        var scores = _studentRepository.GetStudentScoresByExam(id, examId);
-        if (scores.Count == 0)
-            return NotFound("No scores found for this student");
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-        return Ok(scores.Select(s=>_mapper.Map<ScoreDto>(s)));
-    }
 
     [HttpPost]
     public IActionResult CreateStudent([FromBody] StudentDto studentDto)

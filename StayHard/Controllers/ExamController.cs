@@ -12,9 +12,11 @@ public class ExamController: Controller
 {
     private readonly IMapper _mapper;
     private readonly IExamRepository _examRepository;
+    private readonly ICourseRepository _courseRepository;
 
-    public ExamController(IExamRepository examRepository, IMapper mapper)
+    public ExamController(IExamRepository examRepository, ICourseRepository courseRepository, IMapper mapper)
     {
+        _courseRepository = courseRepository;
         _examRepository = examRepository;
         _mapper = mapper;
     }
@@ -64,21 +66,6 @@ public class ExamController: Controller
         return Ok(exams.Select(e => _mapper.Map<ExamDto>(e)));
     }
     
-    [HttpGet("questions/{examId}")]
-    [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
-    public IActionResult GetQuestionsByExam(int examId)
-    {
-        var questions = _examRepository.GetExamQuestions(examId);
-
-        if (questions.Count == 0)
-            return NotFound("No Questions Found");
-
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        return Ok(questions.Select(q=> _mapper.Map<QuestionDto>(q)));
-    }
-    
     [HttpGet("students/{examId}")]
     [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
     public IActionResult GetExamParticipants(int examId)
@@ -101,10 +88,17 @@ public class ExamController: Controller
             return BadRequest();
 
         var exam = _examRepository.GetExams()
-            .Where(e => e.Date == examDto.Date)
             .Where(e => e.Name == examDto.Name)
             .Where(e => e.CourseId == examDto.CourseId)
             .FirstOrDefault();
+
+        var courseExists = _courseRepository.CourseExists(examDto.CourseId);
+
+        if (courseExists == false)
+        {
+            ModelState.AddModelError("", "Course Not found");
+            return StatusCode(404, ModelState);
+        }
 
         if (exam != null)
         {
@@ -116,6 +110,8 @@ public class ExamController: Controller
             return BadRequest(ModelState);
 
         var examObj = _mapper.Map<Exam>(examDto);
+        
+        // todo: confirm file exists , error if id not available
 
         if (!_examRepository.CreateExam(examObj))
         {
@@ -135,6 +131,7 @@ public class ExamController: Controller
         {
             return NotFound("Exam Not Found");
         }
+        // todo: delete file also
         
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -175,4 +172,63 @@ public class ExamController: Controller
         return Ok();
     }
     
+    // Exam file controllers
+    
+    [HttpPost("examFile/create")]
+    public IActionResult CreateExamFile([FromBody] ExamFileDto examFileDto)
+    {
+        if (examFileDto == null)
+            return BadRequest();
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var examFileObj = _mapper.Map<ExamQuestionFile>(examFileDto);
+
+        if (!_examRepository.CreateFile(examFileObj))
+        {
+            ModelState.AddModelError("", "Something went wrong while saving!");
+            return StatusCode(500, ModelState);
+        }
+
+        return Ok(examFileObj.Id);
+    }
+    
+    
+    [HttpGet("examFile")]
+    [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
+    public IActionResult GetExamFiles()
+    {
+        var exam = _examRepository.GetExamFiles();
+
+        if (exam == null)
+            return NotFound("No Exams Found");
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var examFiles = _examRepository.GetExamFiles();
+
+        return Ok(examFiles);
+    }
+    
+    [HttpDelete("examFile/{fileId}")]
+    public IActionResult DeleteExamFile([FromRoute] int fileId)
+    {
+        var examFile = _examRepository.GetExamFile(fileId);
+        
+        if (examFile == null)
+        {
+            return NotFound("Exam File Not Found");
+        }
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
+        if (!_examRepository.RemoveFile(examFile))
+        {
+            return Problem(statusCode: 500, detail: "Something went wrong while deleting!");
+        }
+        return NoContent();
+    }
 }

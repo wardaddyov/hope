@@ -36,12 +36,6 @@ public class StudentRepository: IStudentRepository
             .ToList();
     }
 
-    public ICollection<Score> GetStudentScoresByExam(int id, int examId)
-    {
-        return _context.Scores.Where(s => s.StudentId == id && s.Question.ExamId == examId).Include(s => s.Question)
-            .ToList();
-    }
-
     public bool StudentExists(string studentId)
     {
         return _context.Students.Any(s => s.StudentID == studentId);

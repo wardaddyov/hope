@@ -26,11 +26,7 @@ public class ExamRepository: IExamRepository
     {
         return _context.Exams.Where(e => e.Id == examId).FirstOrDefault();
     }
-
-    public ICollection<Question> GetExamQuestions(int examId)
-    {
-        return _context.Questions.Where(q => q.ExamId == examId).ToList();
-    }
+    
 
     public ICollection<Student> GetExamParticipants(int examId)
     {
@@ -39,6 +35,8 @@ public class ExamRepository: IExamRepository
             .Select(s => s.Student)
             .OrderBy(s => s.StudentID).ToList();
     }
+    
+    
 
     public bool ExamExists(int examId)
     {
@@ -63,29 +61,39 @@ public class ExamRepository: IExamRepository
         return Save();
     }
 
-    public ICollection<ExamFile?> GetExamFiles(int questionFileId, int answerFileId)
+    public ICollection<ExamQuestionFile?> GetExamFiles(int? questionFileId, int? answerFileId)
     {
-        var questionFile = _context.ExamFiles.Where(ef => ef.Id == questionFileId).FirstOrDefault();
-        var answerFile = _context.ExamFiles.Where(ef => ef.Id == answerFileId).FirstOrDefault();
+        var questionFile = _context.ExamQuestionFiles.Where(ef => ef.Id == questionFileId).FirstOrDefault();
+        var answerFile = _context.ExamQuestionFiles.Where(ef => ef.Id == answerFileId).FirstOrDefault();
 
-        return new List<ExamFile?> {questionFile, answerFile };
+        return new List<ExamQuestionFile?> {questionFile, answerFile };
     }
 
-    public bool CreateFile(ExamFile examFile)
+    public ICollection<ExamQuestionFile> GetExamFiles()
     {
-        _context.Add(examFile);
+        return _context.ExamQuestionFiles.ToList();
+    }
+
+    public ExamQuestionFile GetExamFile(int fileId)
+    {
+        return _context.ExamQuestionFiles.Where(ef => ef.Id == fileId).FirstOrDefault();
+    }
+
+    public bool CreateFile(ExamQuestionFile examQuestionFile)
+    {
+        _context.Add(examQuestionFile);
         return Save();
     }
 
-    public bool RemoveFile(ExamFile examFile)
+    public bool RemoveFile(ExamQuestionFile examQuestionFile)
     {
-        _context.Remove(examFile);
+        _context.Remove(examQuestionFile);
         return Save();
     }
 
-    public bool EditFile(ExamFile examFile)
+    public bool EditFile(ExamQuestionFile examQuestionFile)
     {
-        _context.Update(examFile);
+        _context.Update(examQuestionFile);
         return Save();
     }
 

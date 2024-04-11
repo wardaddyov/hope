@@ -9,7 +9,6 @@ public interface IStudentRepository
     Student GetStudent(int studentId);
     // We use ICollection here because name is not a unique parameter and our search can return multiple students
     ICollection<Student> GetStudent(string firstName, string lastName);
-    ICollection<Score> GetStudentScoresByExam(int id, int examId);
     bool StudentExists(string studentId);
     bool StudentExists(int id);
     bool CreateStudent(Student student);
