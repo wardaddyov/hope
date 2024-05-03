@@ -1,1 +1,1 @@
-![logo](https://github.com/wardaddyov/hope/assets/120730378/333594c9-3ed3-4a9a-b9b6-42e2afe18687)
+![nomreLogo](https://github.com/wardaddyov/hope/assets/120730378/9eabe489-56e7-49ef-b436-ae8457fb5a75)
