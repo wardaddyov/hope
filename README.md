@@ -19,9 +19,10 @@ Nomre is aspired towards shedding a new light on the management systems in the e
 
 ![Students List - Teacher](https://github.com/wardaddyov/hope/assets/120730378/079fda32-8ab4-4118-a430-d3b24508273f)
 
-### Courses & Exams Management
+### Course Management
 
 ![List Class - Teacher](https://github.com/wardaddyov/hope/assets/120730378/ca58dab5-eb17-461d-abbc-fee5d8be80c6)
+
 ![Class - Teacher](https://github.com/wardaddyov/hope/assets/120730378/01e1d65f-0327-4500-8315-45adc24d7549)
 
 ## Technologies Involved
@@ -29,5 +30,13 @@ Nomre is aspired towards shedding a new light on the management systems in the e
 <img src="https://github.com/wardaddyov/hope/assets/120730378/6aba6f94-40a0-4f13-87d9-06e94cca5745" alt="neofetch" align="right" height="90">
 Flutter was the framework used for implementing the client side of the software, the decision to use flutter was based on the fact of the fast-paced nature of development on this framework and the ability of using the same codebase for development on the android, web or any other platform.
 
+
+
 ### ASP.NET Core
-ASP.NET Core is architected for testability and integrates seamlessly with popular client-side frameworks, thus a preferred framework for developing the robust backend of this project.
+
+
+<img src="https://github.com/wardaddyov/hope/assets/120730378/afbf2d39-a796-4a0a-b41c-cf67d1f86425" alt="neofetch" align="right" height="90">
+ASP.NET Core is architected for testability and integrates seamlesslywith popular client-side frameworks, thus a preferred framework for developing the robust backend of this project.
+
+## Features of Future
+This project is a means for growth, thus it will grow itself, the following is the list of features and the roadmap of this project in my mind:
