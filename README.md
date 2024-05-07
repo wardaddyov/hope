@@ -39,4 +39,12 @@ Flutter was the framework used for implementing the client side of the software,
 ASP.NET Core is architected for testability and integrates seamlesslywith popular client-side frameworks, thus a preferred framework for developing the robust backend of this project.
 
 ## Features of Future
-This project is a means for growth, thus it will grow itself, the following is the list of features and the roadmap of this project in my mind:
+
+This project is a means for growth, thus it will grow itself, the following is the list of features and the roadmap in my mind:
+
+<img width="1295" alt="Group 14" src="https://github.com/wardaddyov/hope/assets/120730378/526f6d10-62d8-4cfa-bfe7-e0f9426708d1">
+
+<br>we have successfully completed 4 phases so far, with our sights set in maturing the project far more!
+
+## Links
+Front-End respository: 
