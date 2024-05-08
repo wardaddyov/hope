@@ -51,4 +51,4 @@ This project is a means for growth, thus it will grow itself, the following is t
 ## Links
 <br>Front-End respository: https://github.com/wardaddyov/hope-flutter-frontend
 <br>Back-End repository: https://github.com/wardaddyov/hope
-<br>ERD Diagram: https://lucid.app/lucidchart/710ccf0c-123a-4c8b-81b7-3be7eab555d4/edit?viewport_loc=-3950%2C542%2C5708%2C2792%2C0_0&invitationId=inv_4ff7c31f-b358-4e7d-aa5d-ceeef991f3e5
+<br>Entity Relationship Diagram: https://lucid.app/lucidchart/710ccf0c-123a-4c8b-81b7-3be7eab555d4/edit?viewport_loc=-3950%2C542%2C5708%2C2792%2C0_0&invitationId=inv_4ff7c31f-b358-4e7d-aa5d-ceeef991f3e5
