@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StayHard.Dto;
 using StayHard.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace StayHard.Controllers;
 
 [ApiController]
+
 [Route("api/[controller]")]
 public class AdminController : Controller
 {
@@ -20,6 +22,7 @@ public class AdminController : Controller
     }
     
     [Authorize(Roles = "3")]
+    [SwaggerOperation("Get all the available admins")]
     [HttpGet]
     public IActionResult GetAdmins()
     {
@@ -34,6 +37,7 @@ public class AdminController : Controller
         return Ok(admins.Select(a => _mapper.Map<AdminGetDto>(a)));
     }
     
+    [SwaggerOperation("create new admins")]
     [HttpPost]
     public IActionResult CreateAdmin([FromBody] AdminCreateDto adminCreateDto)
     {
@@ -57,6 +61,7 @@ public class AdminController : Controller
             : Problem(statusCode: 500, detail: "Something went wrong while saving!");
     }
     
+    [SwaggerOperation("Delete an admin with id")]
     [HttpDelete("admins/delete/{adminId}")]
     public IActionResult DeleteAdmin([FromRoute] int adminId)
     {

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using StayHard.Data;
 using StayHard.Interfaces;
 using StayHard.Models;
@@ -28,15 +29,50 @@ public class ExamRepository: IExamRepository
     }
     
 
-    public ICollection<Student> GetExamParticipants(int examId)
+    public ICollection<ExamParticipant> GetExamParticipants(int examId)
     {
         return _context.ExamParticipants
-            .Where(ep => ep.ExamId == examId)
-            .Select(s => s.Student)
-            .OrderBy(s => s.StudentID).ToList();
+            .Where(ep => ep.ExamId == examId).Include(x=>x.Student).ToList();
+
     }
-    
-    
+
+    public bool CreateExamParticipants(List<ExamParticipant> examParticipants)
+    {
+        foreach (var participant in examParticipants)
+        {
+            _context.ExamParticipants.Add(participant);
+        }
+        
+        return Save();
+    }
+
+    public bool RemoveExamParticipant(ExamParticipant examParticipant)
+    {
+        _context.ExamParticipants.Remove(examParticipant);
+
+        return Save();
+    }
+
+    public bool EditExamParticipant(List<ExamParticipant> updatedExamParticipants)
+    {
+        //_context.ExamParticipants.Remove(examParticipant);
+        foreach (var participant in updatedExamParticipants)
+        {
+            _context.ExamParticipants.Update(participant);
+        }
+        return Save();
+    }
+
+    public bool ParticipantExists(List<ExamParticipant> examParticipants)
+    {
+        foreach (var participant in examParticipants)
+        {
+            
+        }
+
+        return false;
+    }
+
 
     public bool ExamExists(int examId)
     {

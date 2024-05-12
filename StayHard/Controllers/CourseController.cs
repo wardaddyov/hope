@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using StayHard.Dto;
 using StayHard.Interfaces;
 using StayHard.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace StayHard.Controllers;
 
@@ -23,6 +24,7 @@ public class CourseController: Controller
     }
     
     [HttpGet]
+    [SwaggerOperation("Get all the courses")]
     [ProducesResponseType(type: typeof(IEnumerable<Course>), statusCode: 200)]
     public IActionResult GetCourses()
     {
@@ -37,6 +39,7 @@ public class CourseController: Controller
         return Ok(courses.Select(c => _mapper.Map<CourseDto>(c)));
     }
     
+    [SwaggerOperation("Get course by course id")]
     [HttpGet("course/{courseId}")]
     public IActionResult GetCourse(int courseId)
     {
@@ -51,6 +54,7 @@ public class CourseController: Controller
         return Ok(_mapper.Map<CourseDto>(course));
     }
     
+    [SwaggerOperation("get course by course name")]
     [HttpGet("{courseName}")]
     [ProducesResponseType(type: typeof(IEnumerable<Course>), statusCode: 200)]
     public IActionResult GetCoursesByName(string courseName)
@@ -66,6 +70,7 @@ public class CourseController: Controller
         return Ok(courses.Select(c => _mapper.Map<CourseDto>(c)));
     }
     
+    [SwaggerOperation("get courses based on semester")]
     [HttpGet("courses/{semester}")]
     [ProducesResponseType(type: typeof(IEnumerable<Course>), statusCode: 200)]
     public IActionResult GetCoursesBySemester(int semester)
@@ -81,6 +86,7 @@ public class CourseController: Controller
         return Ok(courses.Select(c => _mapper.Map<CourseDto>(c)));
     }
     
+    [SwaggerOperation("get courses based on semester and name")]
     [HttpGet("{courseName}/{semester}")]
     [ProducesResponseType(type: typeof(IEnumerable<Course>), statusCode: 200)]
     public IActionResult GetCoursesByNameAndSemester(string courseName, int semester)
@@ -96,6 +102,7 @@ public class CourseController: Controller
         return Ok(courses.Select(c => _mapper.Map<CourseDto>(c)));
     }
 
+    [SwaggerOperation("get enrolments in a course")]
     [HttpGet("student/{courseId}")]
     public IActionResult GetStudentsByCourseId(int courseId)
     {
@@ -113,6 +120,7 @@ public class CourseController: Controller
         return Ok(students.Select(s => _mapper.Map<StudentDto>(s)));
     }
     
+    [SwaggerOperation("create a new course")]
     [HttpPost]
     public IActionResult CreateCourse([FromBody] CourseDto courseDto)
     {
@@ -136,6 +144,7 @@ public class CourseController: Controller
             : Problem(statusCode: 500, detail: "Something went wrong while saving!");
     }
     
+    [SwaggerOperation("add new enrolment for a course")]
     [HttpPost("Enrolments/{studentId}/{courseId}")]
     public IActionResult CreateEnrolment([FromRoute] int studentId, int courseId)
     {
@@ -170,6 +179,7 @@ public class CourseController: Controller
         return Ok("Successfully created");
     }
     
+    [SwaggerOperation("add multiple enrolments to the course")]
     [HttpPost("Enrolments/{courseId}")]
     public IActionResult CreateEnrolments([FromRoute] int courseId, [FromBody] List<int> studentIds)
     {        
@@ -212,6 +222,7 @@ public class CourseController: Controller
         return Ok("Successfully created");
     }
 
+    [SwaggerOperation("delete enrolment")]
     [HttpDelete("Enrolments/{studentId}/{courseId}")]
     public IActionResult DeleteEnrolment([FromRoute] int studentId, int courseId)
     {
@@ -234,6 +245,7 @@ public class CourseController: Controller
         return NoContent();
     }
     
+    [SwaggerOperation("delete a course based on id")]
     [HttpDelete("deleteCourse/{courseId}")]
     public IActionResult DeleteCourse([FromRoute] int courseId)
     {
@@ -254,6 +266,7 @@ public class CourseController: Controller
         return NoContent();
     }
     
+    [SwaggerOperation("update course details")]
     [HttpPut("{courseId}")]
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]
@@ -283,6 +296,7 @@ public class CourseController: Controller
         return Ok();
     }
     
+    [SwaggerOperation("update enrolment")]
     [HttpPut("Enrolments/{courseId}")]
     public IActionResult UpdateEnrolments([FromRoute] int courseId, [FromBody] List<int> studentIds)
     {        

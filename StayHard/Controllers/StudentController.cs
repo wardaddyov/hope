@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StayHard.Dto;
 using StayHard.Interfaces;
 using StayHard.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace StayHard.Controllers;
 
@@ -18,7 +19,7 @@ public class StudentController : Controller
         _studentRepository = studentRepository;
         _mapper = mapper;
     }
-
+    [SwaggerOperation("get all the students")]
     [HttpGet]
     [ProducesResponseType(type: typeof(IEnumerable<Student>), statusCode: 200)]
     public IActionResult? GetStudents()
@@ -31,6 +32,7 @@ public class StudentController : Controller
         return Ok(students.Select(s => _mapper.Map<StudentDto>(s)));
     }
 
+    [SwaggerOperation("get students based on actual student id")]
     [HttpGet("{studentId}")]
     [ProducesResponseType(type: typeof(Student), statusCode: 200)]
     [ProducesResponseType(statusCode: 400)]
@@ -44,6 +46,7 @@ public class StudentController : Controller
         return Ok(_mapper.Map<StudentDto>(student));
     }
 
+    [SwaggerOperation("get student based on firstname and lastname")]
     [HttpGet("{firstName}/{lastName}")]
     [ProducesResponseType(type: typeof(Student), statusCode: 200)]
     [ProducesResponseType(statusCode: 400)]
@@ -57,6 +60,7 @@ public class StudentController : Controller
         return Ok(students.Select(s => _mapper.Map<StudentDto>(s)));
     }
 
+    [SwaggerOperation("create a new student")]
     [HttpPost]
     public IActionResult CreateStudent([FromBody] StudentDto studentDto)
     {
@@ -90,6 +94,7 @@ public class StudentController : Controller
         return Ok("Successfully created");
     }
     
+    [SwaggerOperation("update an existing student")]
     [HttpPut("{studentId}")]
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]
@@ -121,6 +126,7 @@ public class StudentController : Controller
         return NoContent();
     }
     
+    [SwaggerOperation("delete an exising student")]
     [HttpDelete("{studentId}")]
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]

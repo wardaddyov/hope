@@ -1,8 +1,10 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using StayHard.Dto;
 using StayHard.Interfaces;
 using StayHard.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace StayHard.Controllers;
 
@@ -22,6 +24,7 @@ public class ExamController: Controller
     }
     
     [HttpGet]
+    [SwaggerOperation("get all the exams")]
     [ProducesResponseType(type: typeof(IEnumerable<Exam>), statusCode: 200)]
     public IActionResult GetExams()
     {
@@ -36,6 +39,7 @@ public class ExamController: Controller
         return Ok(exams.Select(e => _mapper.Map<ExamDto>(e)));
     }
     
+    [SwaggerOperation("get exam with id")]
     [HttpGet("{examId}")]
     [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
     public IActionResult GetExam(int examId)
@@ -51,6 +55,7 @@ public class ExamController: Controller
         return Ok(_mapper.Map<ExamDto>(exam));
     }
     
+    [SwaggerOperation("get exams of a course")]
     [HttpGet("course/{courseId}")]
     [ProducesResponseType(type: typeof(IEnumerable<Exam>), statusCode: 200)]
     public IActionResult GetExams(int courseId)
@@ -66,21 +71,49 @@ public class ExamController: Controller
         return Ok(exams.Select(e => _mapper.Map<ExamDto>(e)));
     }
     
+    
+    [SwaggerOperation("get exam participants with id")]
     [HttpGet("students/{examId}")]
     [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
     public IActionResult GetExamParticipants(int examId)
     {
         var students = _examRepository.GetExamParticipants(examId);
 
+        if (!_examRepository.ExamExists(examId))
+            return NotFound($"No Exam with id {examId} found");
+            
         if (students.Count == 0)
             return NotFound("No Students Found");
+        
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        return Ok(students.Select(s=> _mapper.Map<StudentDto>(s)));
+        return Ok(students.Select(s=> _mapper.Map<ExamParticipantDto>(s)));
+    }
+
+    [SwaggerOperation("update scores of exam participants")]
+    [HttpPut("scores/{examId}")]
+    public IActionResult UpdateExamParticipants([FromBody] List<ExamParticipantPostDto> participantDto, int examId)
+    {
+        if (!_examRepository.ExamExists(examId))
+        {
+            return NotFound("Exam Not found");
+        }
+        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
+        var participants = participantDto.Select(p => _mapper.Map<ExamParticipant>(p)).ToList();
+        
+        
+
+        return _examRepository.EditExamParticipant(participants)
+            ? Ok("Successfully updated participants")
+            : Problem(statusCode: 500, detail: "Something went wrong while saving!");
     }
     
+    [SwaggerOperation("create a new exam")]
     [HttpPost]
     public IActionResult CreateExam([FromBody] ExamDto examDto)
     {
@@ -102,7 +135,7 @@ public class ExamController: Controller
 
         if (exam != null)
         {
-            ModelState.AddModelError("", "Exam Already Exists");
+            ModelState.AddModelError("", $"Exam Already Exists => id : {exam.Id}, name: {exam.Name}");
             return StatusCode(422, ModelState);
         }
 
@@ -119,9 +152,17 @@ public class ExamController: Controller
             return StatusCode(500, ModelState);
         }
 
-        return Ok("Successfully created");
+        var students = _courseRepository.GetEnrolments(examDto.CourseId);
+        var examParticipants = students.Select(s => new ExamParticipant()
+            { ExamId = examObj.Id, StudentId = s.StudentId, Score = null }).ToList();
+        
+        //Todo: confirm participant addition
+        _examRepository.CreateExamParticipants(examParticipants);
+
+        return Ok(examObj.Id);
     }
     
+    [SwaggerOperation("delete an existing exam")]
     [HttpDelete("deleteExam/{examId}")]
     public IActionResult DeleteExam([FromRoute] int examId)
     {
@@ -143,6 +184,7 @@ public class ExamController: Controller
         return NoContent();
     }
     
+    [SwaggerOperation("update an existing exam")]
     [HttpPut("{examId}")]
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]
@@ -173,7 +215,7 @@ public class ExamController: Controller
     }
     
     // Exam file controllers
-    
+    [SwaggerOperation("create a new exam file")]
     [HttpPost("examFile/create")]
     public IActionResult CreateExamFile([FromBody] ExamFileDto examFileDto)
     {
@@ -194,7 +236,7 @@ public class ExamController: Controller
         return Ok(examFileObj.Id);
     }
     
-    
+    [SwaggerOperation("get an existing exam file")]
     [HttpGet("examFile")]
     [ProducesResponseType(type: typeof(Exam), statusCode: 200)]
     public IActionResult GetExamFiles()
@@ -212,6 +254,7 @@ public class ExamController: Controller
         return Ok(examFiles);
     }
     
+    [SwaggerOperation("delete an existing exam file")]
     [HttpDelete("examFile/{fileId}")]
     public IActionResult DeleteExamFile([FromRoute] int fileId)
     {

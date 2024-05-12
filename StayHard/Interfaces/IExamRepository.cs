@@ -8,7 +8,11 @@ public interface IExamRepository
     ICollection<Exam> GetExams(int courseId);
     Exam GetExam(int examId);
     
-    ICollection<Student> GetExamParticipants(int examId);
+    ICollection<ExamParticipant> GetExamParticipants(int examId);
+    bool CreateExamParticipants(List<ExamParticipant> examParticipants);
+    bool RemoveExamParticipant(ExamParticipant examParticipant);
+    bool EditExamParticipant(List<ExamParticipant> updatedExamParticipants);
+    bool ParticipantExists(List<ExamParticipant> examParticipants);
     bool ExamExists(int examId);
     bool CreateExam(Exam exam);
     bool EditExam(Exam exam);
@@ -21,5 +25,4 @@ public interface IExamRepository
     bool RemoveFile(ExamQuestionFile examQuestionFile);
     bool EditFile(ExamQuestionFile examQuestionFile);
     bool Save();
-
 }

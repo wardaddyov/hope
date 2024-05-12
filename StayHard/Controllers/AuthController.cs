@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StayHard.Dto;
 using StayHard.Interfaces;
 using StayHard.Repository;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace StayHard.Controllers;
 
@@ -19,6 +20,7 @@ public class AuthController : Controller
         _authRepository = authRepository;
     }
     
+    [SwaggerOperation("Login user")]
     [HttpPost("login")]
     public IActionResult CreateAdmin([FromBody] AuthDto authDto)
     {
