@@ -124,6 +124,8 @@ public class CourseController: Controller
     [HttpPost]
     public IActionResult CreateCourse([FromBody] CourseDto courseDto)
     {
+        var studentIds = courseDto.studentIds;
+        
         if (courseDto == null)
             return BadRequest();
 
@@ -133,15 +135,35 @@ public class CourseController: Controller
         {
             return UnprocessableEntity("Course Already Exists");
         }
+        
+        List<Enrolment> enrolmentObjs = [];
+        
+
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var courseObj = _mapper.Map<Course>(courseDto);
+
+        if (_courseRepository.CreateCourse(courseObj))
+        {
+            foreach (var id in studentIds)
+            {
+                var student = _studentRepository.GetStudent(id);
+            
+                if (student == null)
+                {
+                    return NotFound("Student Not Found");
+                }  
+            
+                var enrolmentObj = _courseRepository.CreateEnrolmentObject(courseObj, student);
+                enrolmentObjs.Add(enrolmentObj);
+            }
+            _courseRepository.AddStudentsToCourse(enrolmentObjs);
+            return Ok(courseObj.Id);
+        }
         
-        return _courseRepository.CreateCourse(courseObj)
-            ? Ok(courseObj.Id)
-            : Problem(statusCode: 500, detail: "Something went wrong while saving!");
+        return Problem(statusCode: 500, detail: "Something went wrong while saving!");
     }
     
     [SwaggerOperation("add new enrolment for a course")]
